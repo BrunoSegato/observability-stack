@@ -1,0 +1,46 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'self'
+          static_configs:
+            - targets: ['0.0.0.0:8888']
+
+processors:
+  batch:
+
+  spanmetrics:
+    metrics_exporter: prometheus
+    dimensions:
+      - name: http.method
+      - name: http.status_code
+    aggregation_temporality: CUMULATIVE
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+
+  logging:
+    loglevel: debug
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [spanmetrics, batch]
+      exporters: [logging]
+
+    metrics:
+      receivers: [prometheus]
+      processors: []
+      exporters: [prometheus]
