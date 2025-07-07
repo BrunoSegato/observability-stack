@@ -1,126 +1,109 @@
-# 🚀 Observability Stack
+# 📊 Observability Stack
 
-Este repositório fornece uma stack customizada do OpenTelemetry Collector com suporte a métricas de latência (p50, p95, p99), throughput e error rate, exportadas via Prometheus e prontas para visualização no Grafana.
-
----
-
-## ✅ Componentes incluídos no Collector
-
-- `otlpreceiver` (gRPC)
-- `prometheusreceiver`
-- `spanmetricsprocessor` → exporta histogramas de latência
-- `prometheusexporter`
-- `otlpexporter`
-- `loggingexporter`
+Este projeto define uma stack local de observabilidade usando Docker Compose com suporte a **OpenTelemetry Collector**, **Prometheus**, **Grafana** e **Tempo**.
 
 ---
 
-## 📦 Estrutura do projeto
+## 📦 Serviços
+
+### 🔍 otel-collector
+- Imagem: `otel/opentelemetry-collector-contrib:latest`
+- Portas:
+  - `8889`: Exportador Prometheus (spanmetrics)
+  - `13133`: Healthcheck
+  - `14317`: OTLP gRPC
+  - `14318`: OTLP HTTP
+- Configuração: `./otel/otel-collector-config.yaml`
+
+### 📈 Prometheus
+- Imagem: `prom/prometheus:latest`
+- Porta: `9090`
+- Configuração: `./prometheus/prometheus.yml`
+- Scrape de métricas do OTEL Collector
+
+### 📊 Grafana
+- Imagem: `grafana/grafana:latest`
+- Porta: `3000`
+- Provisionamento automático:
+  - **Datasources**: `grafana/provisioning/datasources/datasources.yaml`
+  - **Dashboards**: `grafana/provisioning/dashboards/*.json`
+
+### ⏱ Tempo (Tracing backend)
+- Imagem: `grafana/tempo:latest`
+- Porta: `3200`
+- Configuração: `./tempo/tempo.yaml`
+- Armazenamento de traces: `./tempo-data`
+
+---
+
+## 🗂 Estrutura do projeto
 
 ```
 observability-stack/
-├── README.md
-├── docker-compose.yaml               # Infraestrutura local
-└── otel/
-    ├── builder-config.yaml           # Configuração do otelcol-builder
-    ├── otel-collector-config.yaml    # Configuração do pipeline OTEL Collector
-    ├── Dockerfile                    # Imagem baseada em distroless
-    └── build.sh                      # Script para gerar o binário estático
+├── docker-compose.yaml
+├── grafana/
+│   └── provisioning/
+│       ├── dashboards/
+│       │   ├── api-observability.json
+│       │   └── dashboards.yaml
+│       └── datasources/
+│           └── datasources.yaml
+├── otel/
+│   └── otel-collector-config.yaml
+├── prometheus/
+│   └── prometheus.yml
+├── tempo/
+│   ├── tempo.yaml
+│   └── tempo-data/
+│       ├── wal/
+│       └── tempo_cluster_seed.json
 ```
 
 ---
 
-## 🛠️ Requisitos
-
-- Go ≥ 1.20
-- Docker
-- Docker Compose
-- otelcol-builder instalado:
+## 🚀 Subindo o ambiente
 
 ```bash
-go install github.com/open-telemetry/opentelemetry-collector-builder@latest
+docker compose up -d
 ```
+
+Aguarde até que os containers estejam com status `healthy`.
 
 ---
 
-## 🧰 Como rodar localmente
+## 🌐 Acessos
 
-1. Acesse a pasta do projeto:
-
-```bash
-cd observability-stack/otel
-```
-
-2. Gere o binário customizado:
-
-```bash
-chmod +x build.sh
-./build.sh
-```
-
-> O script irá gerar o `otelcol` com build estático e todos os componentes necessários.
-
-3. Suba os serviços:
-
-```bash
-docker compose up --build
-```
+| Serviço     | URL                        |
+|-------------|----------------------------|
+| Grafana     | http://localhost:3000      |
+| Prometheus  | http://localhost:9090      |
+| Tempo       | http://localhost:3200      |
+| OTEL Exporter (metrics) | http://localhost:8889/metrics |
 
 ---
 
-## 📈 Acessar métricas
+## 📊 Dashboards
 
-- Prometheus scrape (spanmetrics):
+O Grafana já carrega automaticamente:
+- `api-observability.json` para visualização de métricas `p95`, `p99`, throughput e traces via spanmetrics
 
+---
+
+## ✅ Healthcheck
+
+Todos os serviços possuem **healthchecks ativos**, garantindo que só iniciem em sequência quando seus dependentes estiverem prontos.
+
+---
+
+## 📌 Observações
+
+- A latência em `p95`, `p99` pode ser monitorada via:
+  ```promql
+  histogram_quantile(0.95, rate(traces_span_metrics_duration_milliseconds_bucket[5m]))
   ```
-  http://localhost:8889/metrics
-  ```
-
-- Grafana (se você tiver configurado):
-
-  ```
-  http://localhost:3000
-  ```
-
-> Basta importar o `grafana-dashboard.json` para visualizar p95, p99, throughput e erro por rota.
-
----
-
-## 📊 Dashboard Grafana incluído
-
-O painel contém:
-
-- 📈 Gráfico de p95 / p99 por operação (PromQL com `histogram_quantile`)
-- 📉 Error rate por operação
-- 🚀 Throughput (req/s)
-- 📋 Tabela de latência por endpoint (p50 / p95 / p99)
-
----
-
-## 📤 Reutilizando em outros projetos
-
-Basta copiar este repositório para dentro do seu projeto ou utilizá-lo como submódulo:
-
-```bash
-git submodule add https://github.com/seu-usuario/otel-collector-custom-stack.git observability
-```
-
-E então integrar seu serviço com o OTLP endpoint: `http://otel-collector:4317`
-
----
-
-## 🤝 Contribuições
-
-Sinta-se à vontade para abrir PRs, sugerir melhorias ou adicionar templates de dashboard para outras linguagens/frameworks.
-
----
-
-## 🧑‍💻 Autor
-
-Bruno Segato — [@seu-usuario](https://github.com/seu-usuario)
 
 ---
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a licença MIT.
+MIT
