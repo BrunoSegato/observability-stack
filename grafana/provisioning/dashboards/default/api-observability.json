@@ -22,6 +22,555 @@
   "links": [],
   "panels": [
     {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 9,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "reqpm"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 0,
+            "y": 1
+          },
+          "id": 6,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "expr": "sum by(service_name) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Throughput",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 4,
+            "y": 1
+          },
+          "id": 1,
+          "options": {
+            "legend": {
+              "calcs": [
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "expr": "sum by(span_name) (traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\"})",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "{{span_name}}",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Total de requisições por endpoint",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 4,
+          "options": {
+            "displayMode": "gradient",
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "maxVizHeight": 300,
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "namePlacement": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "sizing": "auto",
+            "valueMode": "color"
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "expr": "sum by(http_status_code) (traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\"})",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Distribuição por Status Code",
+          "type": "bargauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Tempo médio de resposta",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 0,
+            "y": 5
+          },
+          "id": 7,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "expr": "(sum(rate(traces_span_metrics_duration_milliseconds_sum{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\"}[1m])) * 1) / sum(rate(traces_span_metrics_duration_milliseconds_count{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\"}[1m]))",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Latency",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 9
+          },
+          "id": 5,
+          "options": {
+            "legend": {
+              "calcs": [
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "expr": "rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", status_code!=\"STATUS_CODE_OK\"}[1m])",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "{{span_name}}",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Requisições por segundo",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 9
+          },
+          "id": 3,
+          "options": {
+            "displayMode": "gradient",
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "maxVizHeight": 300,
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "namePlacement": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "sizing": "auto",
+            "valueMode": "color"
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "sum by(http_route, http_status_code) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", http_status_code=~\"^[4][0-9][0-9]\"}[$__rate_interval]))",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "{{span_name}}",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "sum by(http_route, http_status_code) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", http_status_code=~\"^[5][0-9][0-9]\"}[$__rate_interval]))",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "{{span_name}}",
+              "range": true,
+              "refId": "B",
+              "useBackend": false
+            }
+          ],
+          "title": "Erros por Operação",
+          "type": "bargauge"
+        }
+      ],
+      "title": "Geral",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 10,
+      "panels": [],
+      "title": "Endpoint",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -48,9 +597,9 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 2
       },
-      "id": 6,
+      "id": 11,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -76,8 +625,8 @@
             "uid": "PBFA97CFB590B2093"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(service_name) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
+          "editorMode": "code",
+          "expr": "sum by(service_name) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[$__range]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -95,260 +644,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 4,
-        "y": 0
-      },
-      "id": 1,
-      "options": {
-        "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(http_method, http_route) (traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\"})",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "{{http_method}} {{http_route}}",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Total de requisições por endpoint",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 4,
-      "options": {
-        "displayMode": "gradient",
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "maxVizHeight": 300,
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "namePlacement": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
-      },
-      "pluginVersion": "12.0.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(http_status_code) (traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\"})",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Distribuição por Status Code",
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "description": "Tempo médio de resposta",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "noValue": "0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 0,
-        "y": 4
-      },
-      "id": 7,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.0.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "(sum(rate(traces_span_metrics_duration_milliseconds_sum{service=\"$service_name\"}[1m])) * 1) / sum(rate(traces_span_metrics_duration_milliseconds_count{service=\"$service_name\"}[1m]))",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Latency",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "description": "Average response time and latency.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -405,25 +701,157 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
+        "w": 20,
+        "x": 4,
+        "y": 2
       },
-      "id": 5,
+      "id": 8,
       "options": {
         "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "right",
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "multi",
+          "mode": "single",
           "sort": "none"
         }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "(sum(rate(traces_span_metrics_duration_milliseconds_sum{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[1m])) * 1) / sum(rate(traces_span_metrics_duration_milliseconds_count{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[1m]))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "Average",
+          "range": true,
+          "refId": "Average",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "histogram_quantile(0.99, rate(traces_span_metrics_duration_milliseconds_bucket{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[5m]))",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "p99",
+          "range": true,
+          "refId": "p99",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "histogram_quantile(0.95, rate(traces_span_metrics_duration_milliseconds_bucket{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[5m]))",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "p95",
+          "range": true,
+          "refId": "p95",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "histogram_quantile(0.7, rate(traces_span_metrics_duration_milliseconds_bucket{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[5m]))",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "p70",
+          "range": true,
+          "refId": "p70",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "histogram_quantile(0.5, rate(traces_span_metrics_duration_milliseconds_bucket{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[5m]))",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "p50",
+          "range": true,
+          "refId": "p50",
+          "useBackend": false
+        }
+      ],
+      "title": "Latency p99, p95, p70, p50",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Tempo médio de resposta",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 6
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "12.0.2",
       "targets": [
@@ -433,19 +861,19 @@
             "uid": "PBFA97CFB590B2093"
           },
           "disableTextWrap": false,
-          "editorMode": "code",
-          "expr": "rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", status_code!=\"STATUS_CODE_OK\"}[1m])",
+          "editorMode": "builder",
+          "expr": "(sum(rate(traces_span_metrics_duration_milliseconds_sum{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[1m])) * 1) / sum(rate(traces_span_metrics_duration_milliseconds_count{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"}[1m]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "{{http_method}} {{http_route}}",
+          "legendFormat": "__auto",
           "range": true,
           "refId": "A",
           "useBackend": false
         }
       ],
-      "title": "Requisições por segundo",
-      "type": "timeseries"
+      "title": "Latency",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -475,11 +903,90 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
+        "w": 8,
+        "x": 0,
+        "y": 10
       },
-      "id": 3,
+      "id": 13,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum by(http_status_code) (traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\"})",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "{{http_status_code}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Distribuição por Status Code",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 10
+      },
+      "id": 14,
       "options": {
         "displayMode": "gradient",
         "legend": {
@@ -513,11 +1020,11 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum by(http_route, http_status_code) (traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", http_status_code=~\"^[4][0-9][0-9]\"})",
+          "expr": "sum by(http_route, http_status_code) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\", http_status_code=~\"^[4][0-9][0-9]\"}[$__rate_interval]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "{{http_status_code}} {{http_route}}",
+          "legendFormat": "{{span_name}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -529,12 +1036,12 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum by(http_route, http_status_code) (traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", http_status_code=~\"^[5][0-9][0-9]\"})",
+          "expr": "sum by(http_route, http_status_code) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_kind=\"SPAN_KIND_SERVER\", span_name=\"$endpoint\", http_status_code=~\"^[5][0-9][0-9]\"}[$__rate_interval]))",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "{{http_status_code}} {{http_route}}",
+          "legendFormat": "{{span_name}}",
           "range": true,
           "refId": "B",
           "useBackend": false
@@ -542,6 +1049,79 @@
       ],
       "title": "Erros por Operação",
       "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "% de requisições com erro por endpoint",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 10
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "100 * (sum(rate(traces_span_metrics_calls_total{http_status_code=~\"4..|5..\", service_name=\"$service_name\", span_name=\"$endpoint\"}[$__rate_interval]))\n/\nsum(rate(traces_span_metrics_calls_total{service_name=\"$service_name\", span_name=\"$endpoint\"}[$__rate_interval])))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "{{span_name}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "% Erro Rate",
+      "type": "stat"
     }
   ],
   "preload": false,
@@ -572,6 +1152,24 @@
         "refresh": 1,
         "regex": "",
         "type": "query"
+      },
+      {
+        "current": {
+          "text": "GET /ping",
+          "value": "GET /ping"
+        },
+        "definition": "label_values(traces_span_metrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"},span_name)",
+        "label": "Endpoint",
+        "name": "endpoint",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(traces_span_metrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"},span_name)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
       }
     ]
   },
@@ -583,5 +1181,5 @@
   "timezone": "",
   "title": "Requisições por Endpoint",
   "uid": "e64df2e2-c1c5-4d27-b3bd-f13ba34b728a",
-  "version": 2
+  "version": 25
 }
