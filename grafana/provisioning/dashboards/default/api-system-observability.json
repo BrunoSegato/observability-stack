@@ -566,7 +566,7 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -666,6 +666,7 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "noValue": "\\o/",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -773,6 +774,7 @@
             }
           },
           "mappings": [],
+          "noValue": "\\o/",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -854,6 +856,7 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "noValue": "\\o/",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1046,6 +1049,7 @@
             "inspect": false
           },
           "mappings": [],
+          "noValue": "\\o/",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1166,7 +1170,7 @@
             "h": 4,
             "w": 4,
             "x": 0,
-            "y": 70
+            "y": 40
           },
           "id": 11,
           "options": {
@@ -1273,7 +1277,7 @@
             "h": 8,
             "w": 20,
             "x": 4,
-            "y": 70
+            "y": 40
           },
           "id": 8,
           "options": {
@@ -1285,7 +1289,7 @@
             },
             "tooltip": {
               "hideZeros": false,
-              "mode": "single",
+              "mode": "multi",
               "sort": "none"
             }
           },
@@ -1403,7 +1407,7 @@
             "h": 4,
             "w": 4,
             "x": 0,
-            "y": 74
+            "y": 44
           },
           "id": 12,
           "options": {
@@ -1509,7 +1513,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 78
+            "y": 48
           },
           "id": 19,
           "options": {
@@ -1593,6 +1597,7 @@
                 }
               },
               "mappings": [],
+              "noValue": "\\o/",
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1613,7 +1618,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 78
+            "y": 48
           },
           "id": 20,
           "options": {
@@ -1674,6 +1679,7 @@
                 "mode": "thresholds"
               },
               "mappings": [],
+              "noValue": "\\o/",
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1693,7 +1699,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 78
+            "y": 48
           },
           "id": 21,
           "options": {
@@ -1772,7 +1778,7 @@
             "h": 14,
             "w": 12,
             "x": 0,
-            "y": 86
+            "y": 56
           },
           "id": 23,
           "options": {
@@ -1871,7 +1877,7 @@
             "h": 14,
             "w": 12,
             "x": 12,
-            "y": 86
+            "y": 56
           },
           "id": 24,
           "options": {
@@ -2009,5 +2015,5 @@
   "timezone": "",
   "title": "System Observability",
   "uid": "e64df2e2-c1c5-4d27-b3bd-f13ba34b728a",
-  "version": 2
+  "version": 1
 }
