@@ -49,7 +49,7 @@ service:
   extensions: [health_check]
   telemetry:
     logs:
-      level: debug
+      level: info
   pipelines:
     traces:
       receivers: [otlp]
