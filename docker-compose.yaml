@@ -9,6 +9,9 @@ services:
       - 13133:13133 # health_check extension
       - 14317:4317 # OTLP gRPC receiver
       - 14318:4318 # OTLP http receiver
+    depends_on:
+      clickhouse:
+        condition: service_healthy
     networks:
       - observability
 
@@ -69,6 +72,9 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+    depends_on:
+      prometheus:
+        condition: service_healthy
     networks:
       - observability
 

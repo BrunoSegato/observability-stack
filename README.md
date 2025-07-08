@@ -1,109 +1,135 @@
-# 📊 Observability Stack
+# Observability Stack with OpenTelemetry, Prometheus, Tempo, ClickHouse and Grafana
 
-Este projeto define uma stack local de observabilidade usando Docker Compose com suporte a **OpenTelemetry Collector**, **Prometheus**, **Grafana** e **Tempo**.
+## Visão Geral
 
----
+Este projeto provê uma stack completa de observabilidade local baseada em:
 
-## 📦 Serviços
+* **OpenTelemetry Collector**: coleta métricas, traces e logs das aplicações.
+* **Prometheus**: armazena e consulta métricas expostas pelo OTEL.
+* **Grafana**: interface para visualização de métricas e traces.
+* **Grafana Tempo**: armazena e consulta traces.
+* **ClickHouse**: armazena eventos e erros de negócio para análises personalizadas.
 
-### 🔍 otel-collector
-- Imagem: `otel/opentelemetry-collector-contrib:latest`
-- Portas:
-  - `8889`: Exportador Prometheus (spanmetrics)
-  - `13133`: Healthcheck
-  - `14317`: OTLP gRPC
-  - `14318`: OTLP HTTP
-- Configuração: `./otel/otel-collector-config.yaml`
-
-### 📈 Prometheus
-- Imagem: `prom/prometheus:latest`
-- Porta: `9090`
-- Configuração: `./prometheus/prometheus.yml`
-- Scrape de métricas do OTEL Collector
-
-### 📊 Grafana
-- Imagem: `grafana/grafana:latest`
-- Porta: `3000`
-- Provisionamento automático:
-  - **Datasources**: `grafana/provisioning/datasources/datasources.yaml`
-  - **Dashboards**: `grafana/provisioning/dashboards/*.json`
-
-### ⏱ Tempo (Tracing backend)
-- Imagem: `grafana/tempo:latest`
-- Porta: `3200`
-- Configuração: `./tempo/tempo.yaml`
-- Armazenamento de traces: `./tempo-data`
+A stack é provisionada com dashboards prontos e datasources configurados automaticamente.
 
 ---
 
-## 🗂 Estrutura do projeto
-
-```
-observability-stack/
-├── docker-compose.yaml
-├── grafana/
-│   └── provisioning/
-│       ├── dashboards/
-│       │   ├── api-observability.json
-│       │   └── dashboards.yaml
-│       └── datasources/
-│           └── datasources.yaml
-├── otel/
-│   └── otel-collector-config.yaml
-├── prometheus/
-│   └── prometheus.yml
-├── tempo/
-│   ├── tempo.yaml
-│   └── tempo-data/
-│       ├── wal/
-│       └── tempo_cluster_seed.json
-```
-
----
-
-## 🚀 Subindo o ambiente
+## Como iniciar localmente
 
 ```bash
 docker compose up -d
 ```
 
-Aguarde até que os containers estejam com status `healthy`.
+A stack sobe os seguintes serviços:
+
+| Serviço        | URL                                            | Descrição                                             |
+| -------------- | ---------------------------------------------- | ----------------------------------------------------- |
+| Grafana        | [http://localhost:3000](http://localhost:3000) | Interface de visualização de métricas, traces e erros |
+| Prometheus     | [http://localhost:9090](http://localhost:9090) | Armazenamento e consulta de métricas                  |
+| Tempo (traces) | [http://localhost:3200](http://localhost:3200) | Backend de traces                                     |
+| ClickHouse     | [http://localhost:8123](http://localhost:8123) | Banco para dados analíticos e de negócios             |
+| OTEL Collector | OTLP GRPC: 4317                                | Receptor de métricas e traces no formato OTLP         |
+
+Usuário padrão do Grafana:
+
+* **Usuário**: `admin`
+* **Senha**: `admin`
 
 ---
 
-## 🌐 Acessos
+## Serviços detalhados
 
-| Serviço     | URL                        |
-|-------------|----------------------------|
-| Grafana     | http://localhost:3000      |
-| Prometheus  | http://localhost:9090      |
-| Tempo       | http://localhost:3200      |
-| OTEL Exporter (metrics) | http://localhost:8889/metrics |
+### 🔭 OpenTelemetry Collector
 
----
+* Recebe dados no formato OTLP (traces e métricas)
+* Exporta para Prometheus, Tempo e ClickHouse
+* Configurado via `otel-collector-config.yaml`
 
-## 📊 Dashboards
+### 📈 Prometheus
 
-O Grafana já carrega automaticamente:
-- `api-observability.json` para visualização de métricas `p95`, `p99`, throughput e traces via spanmetrics
+* Armazena e serve métricas Prometheus
+* Utiliza `prometheus.yml` com scrape automático do OTEL Collector
 
----
+### 📊 Grafana
 
-## ✅ Healthcheck
+* Visualização unificada de métricas (Prometheus), traces (Tempo) e dados de negócios (ClickHouse)
+* Dashboards padrão incluídos automaticamente via `dashboards.yaml` e `datasources.yaml`
 
-Todos os serviços possuem **healthchecks ativos**, garantindo que só iniciem em sequência quando seus dependentes estiverem prontos.
+### 🧵 Grafana Tempo
 
----
+* Armazena spans e traces
+* Integra com o painel de trace e painel de latência por endpoint
 
-## 📌 Observações
+### ⚡ ClickHouse
 
-- A latência em `p95`, `p99` pode ser monitorada via:
-  ```promql
-  histogram_quantile(0.95, rate(traces_span_metrics_duration_milliseconds_bucket[5m]))
-  ```
+* Armazena eventos e exceções das aplicações (via OTEL Collector)
+* Permite análises SQL rápidas e avançadas
 
 ---
 
-## 📄 Licença
+## Dashboards incluídos
 
-MIT
+### 1. `API System Observability`
+
+Painel técnico com métricas extraídas via Prometheus:
+
+* **Throughput geral e por endpoint**
+* **Latência média e percentis (p50, p70, p95, p99)**
+* **Códigos HTTP agrupados (2xx, 4xx, 5xx)**
+* **Taxa de erro (% errors / total)**
+* **Top traces lentos (via Tempo)**
+* **Top exceções por rota (via ClickHouse)**
+
+### 2. `API Business Observability`
+
+Painel focado em fluxos de negócio, com base em spans de processos como `begin_checkout`, `payment` e `get.checkout`:
+
+* **Tempo médio e percentis por etapa do fluxo**
+* **Erros agrupados por status code (ClickHouse)**
+* **Top tipos de exceção por etapa do processo (ClickHouse)**
+
+Ambos os dashboards suportam variáveis como `service_name` e `endpoint` para filtrar os dados por serviço ou rota específica.
+
+---
+
+## Como utilizar
+
+### Enviando dados
+
+Para ver dados nos dashboards, envie spans ou métricas para o OTEL Collector local:
+
+* **Endpoint OTLP gRPC**: `http://localhost:4317`
+* **Formato recomendado**: OTLP
+
+Pode-se utilizar bibliotecas do OpenTelemetry nas suas aplicações Python, Node, Java etc.
+
+### Visualizando
+
+1. Acesse `http://localhost:3000`
+2. Vá em **Dashboards > Browse**
+3. Selecione: `API System Observability` ou `API Business Observability`
+
+---
+
+## Estrutura dos arquivos
+
+* `docker-compose.yaml`: orquestra todos os serviços
+* `otel-collector-config.yaml`: configuração do collector OTEL
+* `prometheus.yml`: scrape config Prometheus
+* `tempo.yaml`: configuração do Tempo
+* `datasources.yaml`: define conexões do Grafana com Tempo, Prometheus e ClickHouse
+* `dashboards.yaml`: inclui dashboards padrão automaticamente
+* `api-system-observability.json`: painel de métricas técnicas
+* `api-business-observability.json`: painel de fluxo de negócios
+
+---
+
+## Contribuindo
+
+Sinta-se livre para clonar e adaptar para seus projetos. Sugestões e melhorias são bem-vindas!
+
+---
+
+## Licença
+
+MIT License
