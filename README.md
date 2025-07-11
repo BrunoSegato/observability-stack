@@ -26,7 +26,7 @@ A stack sobe os seguintes serviços:
 | -------------- | ---------------------------------------------- | ----------------------------------------------------- |
 | Grafana        | [http://localhost:3000](http://localhost:3000) | Interface de visualização de métricas, traces e erros |
 | Prometheus     | [http://localhost:9090](http://localhost:9090) | Armazenamento e consulta de métricas                  |
-| Tempo (traces) | [http://localhost:3200](http://localhost:3200) | Backend de traces                                     |
+| Tempo (traces) | [http://localhost:3200/metrics](http://localhost:3200/metrics) | Backend de traces                                     |
 | ClickHouse     | [http://localhost:8123](http://localhost:8123) | Banco para dados analíticos e de negócios             |
 | OTEL Collector | OTLP GRPC: 4317                                | Receptor de métricas e traces no formato OTLP         |
 

@@ -1965,6 +1965,7 @@
   "templating": {
     "list": [
       {
+        "allowCustomValue": false,
         "current": {
           "text": "fastapi-another-one",
           "value": "fastapi-another-one"
@@ -1974,6 +1975,7 @@
           "uid": "PBFA97CFB590B2093"
         },
         "definition": "label_values(traces_span_metrics_calls_total,service_name)",
+        "description": "",
         "includeAll": false,
         "label": "Service Name",
         "name": "service_name",
@@ -1983,11 +1985,12 @@
           "query": "label_values(traces_span_metrics_calls_total,service_name)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 2,
+        "refresh": 1,
         "regex": "",
         "type": "query"
       },
       {
+        "allowCustomValue": false,
         "current": {
           "text": "GET /ping",
           "value": "GET /ping"
@@ -2001,7 +2004,7 @@
           "query": "label_values(traces_span_metrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"},span_name)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 2,
+        "refresh": 1,
         "regex": "",
         "type": "query"
       }

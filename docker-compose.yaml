@@ -30,6 +30,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      otel-collector:
+        condition: service_started
     networks:
       - observability
 
@@ -53,6 +56,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      clickhouse:
+        condition: service_started
+      prometheus:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+      tempo:
+        condition: service_started
     networks:
       - observability
 
