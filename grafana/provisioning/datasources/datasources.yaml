@@ -22,10 +22,12 @@ datasources:
         spanEndTimeShift: '1h'
 
   - name: ClickHouse
-    uid: clickhouse
-    type: vertamedia-clickhouse-datasource
-    access: proxy
-    url: http://clickhouse:8123
+    type: grafana-clickhouse-datasource
     jsonData:
+      defaultDatabase: default
+      port: 9000
+      host: clickhouse
       username: default
-      database: default
+      tlsSkipVerify: false
+    secureJsonData:
+      password: ""
