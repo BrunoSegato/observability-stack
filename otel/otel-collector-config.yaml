@@ -3,7 +3,7 @@ extensions:
     endpoint: ":13133"
 
 connectors:
-  spanmetrics:
+  span_metrics:
     histogram:
       explicit:
         buckets: [ 5ms, 10ms, 25ms, 50ms, 100ms, 250ms, 500ms, 1s, 2.5s, 5s, 10s ]
@@ -25,6 +25,17 @@ receivers:
 processors:
   batch:
 
+  # Map stable HTTP attributes onto the legacy names used as span_metrics dimensions,
+  # so old and new instrumentations are aggregated into the same series.
+  # Runs on spans (before aggregation) and only in the span metrics pipeline,
+  # leaving the spans stored in Tempo and ClickHouse untouched.
+  transform/http_semconv:
+    trace_statements:
+      - context: span
+        statements:
+          - set(attributes["http.method"], attributes["http.request.method"]) where attributes["http.request.method"] != nil
+          - set(attributes["http.status_code"], attributes["http.response.status_code"]) where attributes["http.response.status_code"] != nil
+
 exporters:
   debug:
     verbosity: detailed
@@ -32,7 +43,7 @@ exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
 
-  otlphttp:
+  otlp_http:
     endpoint: http://tempo:4318
     tls:
       insecure: true
@@ -53,8 +64,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlphttp, spanmetrics, clickhouse]
+      exporters: [otlp_http, clickhouse]
+    traces/span_metrics:
+      receivers: [otlp]
+      processors: [transform/http_semconv, batch]
+      exporters: [span_metrics]
     metrics:
-      receivers: [spanmetrics]
+      receivers: [span_metrics]
       processors: [batch]
       exporters: [prometheus]

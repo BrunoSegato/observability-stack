@@ -18,13 +18,6 @@ datasources:
     url: http://tempo:3200
     jsonData:
       httpMethod: GET
-      tracesToLogs:
-        datasource: Loki
-        tags: ['job', 'instance']
-        mappedTags: ['service.name']
-        mapTagNamesEnabled: true
-        spanStartTimeShift: '1h'
-        spanEndTimeShift: '1h'
 
   - name: ClickHouse
     type: grafana-clickhouse-datasource
