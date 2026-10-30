@@ -90,7 +90,7 @@ O Grafana está configurado com acesso anônimo como **Admin** e sem tela de log
 
 ### 1. `System Observability`
 
-Painel técnico com métricas extraídas via Prometheus:
+Painel técnico com métricas (Prometheus), traces (Tempo), exceções (ClickHouse) e logs (Loki):
 
 * **Throughput geral e por endpoint**
 * **Latência média e percentis (p50, p70, p95, p99)**
@@ -98,6 +98,7 @@ Painel técnico com métricas extraídas via Prometheus:
 * **Taxa de erro (% errors / total)**
 * **Top traces lentos (via Tempo)**
 * **Top exceções por rota (via ClickHouse)**
+* **Volume de logs por nível e lista de logs do serviço (via Loki)**
 
 ### 2. `Business Observability`
 
@@ -107,7 +108,7 @@ Painel focado em fluxos de negócio, com base em spans de processos como `begin_
 * **Spans de `get.checkout` agrupados por status do span (ClickHouse)**
 * **Top tipos de exceção em `get.checkout` (ClickHouse)**
 
-O dashboard `System Observability` tem as variáveis `service_name` e `endpoint` para filtrar por serviço ou rota. O `Business Observability` não tem variáveis: os nomes dos spans de negócio estão fixos nas queries.
+O dashboard `System Observability` tem as variáveis `service_name` e `endpoint` para filtrar por serviço ou rota, e `Log search` para filtrar o conteúdo dos logs (sem diferenciar maiúsculas/minúsculas; aceita expressão regular). Os painéis de logs filtram apenas por serviço, já que os logs não carregam a rota HTTP. O `Business Observability` não tem variáveis: os nomes dos spans de negócio estão fixos nas queries.
 
 ---
 
