@@ -118,7 +118,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "(sum(rate(traces_span_metrics_duration_milliseconds_sum{span_name=\"get.checkout\"}[1m])) * 1) / sum(rate(traces_span_metrics_duration_milliseconds_count{span_name=\"payment\"}[1m]))",
+              "expr": "(sum(rate(traces_span_metrics_duration_milliseconds_sum{span_name=\"get.checkout\"}[1m])) * 1) / sum(rate(traces_span_metrics_duration_milliseconds_count{span_name=\"get.checkout\"}[1m]))",
               "hide": false,
               "instant": false,
               "legendFormat": "Average",
@@ -441,7 +441,7 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
+            "type": "grafana-clickhouse-datasource",
             "uid": "clickhouse"
           },
           "fieldConfig": {
@@ -494,27 +494,15 @@
           "pluginVersion": "12.0.2",
           "targets": [
             {
-              "adHocFilters": [],
-              "adHocValuesQuery": "",
-              "add_metadata": true,
-              "contextWindowSize": "10",
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
+                "type": "grafana-clickhouse-datasource",
                 "uid": "clickhouse"
               },
-              "editorMode": "builder",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "interval": "",
-              "intervalFactor": 1,
-              "nullifySparse": false,
-              "query": "SELECT\n  StatusCode,\n  count(*) AS total\nFROM default.otel_traces\nWHERE SpanName IN ('get.checkout')\nGROUP BY StatusCode",
-              "rawQuery": "/* grafana dashboard='Business Observability', user='0' */\nSELECT\n  StatusCode,\n  count(*) AS total\nFROM default.otel_traces\nWHERE SpanName IN ('get.checkout')\nGROUP BY StatusCode",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true,
-              "useWindowFuncForMacros": true
+              "editorType": "sql",
+              "format": 1,
+              "queryType": "table",
+              "rawSql": "SELECT\n  StatusCode,\n  count() AS total\nFROM default.otel_traces\nWHERE\n  $__timeFilter(Timestamp) AND\n  SpanName = 'get.checkout'\nGROUP BY StatusCode",
+              "refId": "A"
             }
           ],
           "title": "Checkout Flow",
@@ -522,7 +510,7 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
+            "type": "grafana-clickhouse-datasource",
             "uid": "clickhouse"
           },
           "fieldConfig": {
@@ -575,27 +563,15 @@
           "pluginVersion": "12.0.2",
           "targets": [
             {
-              "adHocFilters": [],
-              "adHocValuesQuery": "",
-              "add_metadata": true,
-              "contextWindowSize": "10",
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
+                "type": "grafana-clickhouse-datasource",
                 "uid": "clickhouse"
               },
-              "editorMode": "builder",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "interval": "",
-              "intervalFactor": 1,
-              "nullifySparse": false,
-              "query": "SELECT\n  SpanAttributes['exception.type'] AS \"Exception Type\",\n  count() AS \"Total\"\nFROM default.otel_traces\nWHERE\n  has(SpanAttributes, 'exception.type') AND\n  SpanName = 'get.checkout'\nGROUP BY\n  \"Exception Type\"",
-              "rawQuery": "/* grafana dashboard='Business Observability', user='0' */\nSELECT\n  SpanAttributes['exception.type'] AS \"Exception Type\",\n  count() AS \"Total\"\nFROM default.otel_traces\nWHERE\n  has(SpanAttributes, 'exception.type') AND\n  SpanName = 'get.checkout'\nGROUP BY\n  \"Exception Type\"",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true,
-              "useWindowFuncForMacros": true
+              "editorType": "sql",
+              "format": 1,
+              "queryType": "table",
+              "rawSql": "SELECT\n  EventAttributes['exception.type'] AS \"Exception Type\",\n  count() AS \"Total\"\nFROM default.otel_traces\nARRAY JOIN `Events.Name` AS EventName, `Events.Attributes` AS EventAttributes\nWHERE\n  $__timeFilter(Timestamp) AND\n  SpanName = 'get.checkout' AND\n  EventName = 'exception'\nGROUP BY \"Exception Type\"\nORDER BY \"Total\" DESC",
+              "refId": "A"
             }
           ],
           "title": "Top Exception Errors",

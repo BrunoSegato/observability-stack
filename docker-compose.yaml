@@ -7,8 +7,8 @@ services:
     ports:
       - 8889:8889 # Prometheus exporter metrics
       - 13133:13133 # health_check extension
-      - 14317:4317 # OTLP gRPC receiver
-      - 14318:4318 # OTLP http receiver
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
     depends_on:
       clickhouse:
         condition: service_healthy
@@ -74,11 +74,9 @@ services:
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./tempo/tempo.yaml:/etc/tempo.yaml
-      - ./tempo-data:/tmp/tempo
+      - tempo-data:/tmp/tempo
     ports:
       - "3200:3200"
-      - "4317:4317"
-      - "4318:4318"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3200/ready"]
       interval: 25s
@@ -86,10 +84,21 @@ services:
       retries: 10
       start_period: 20s
     depends_on:
+      tempo-init:
+        condition: service_completed_successfully
       prometheus:
         condition: service_healthy
     networks:
       - observability
+
+  # Tempo runs as uid 10001; the volume is created as root, so fix ownership first
+  tempo-init:
+    image: busybox:latest
+    container_name: tempo-init
+    user: root
+    command: [ "chown", "-R", "10001:10001", "/tmp/tempo" ]
+    volumes:
+      - tempo-data:/tmp/tempo
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest

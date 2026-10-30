@@ -717,7 +717,7 @@
             {
               "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "sum by(span_kind, span_name) (rate(traces_span_metrics_calls_total{service_name=\"fastapi-another-one\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
+              "expr": "sum by(span_kind, span_name) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
               "fullMetaSearch": false,
               "includeNullMetadata": true,
               "legendFormat": "{{span_name}}",
@@ -1032,7 +1032,7 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
+            "type": "grafana-clickhouse-datasource",
             "uid": "clickhouse"
           },
           "fieldConfig": {
@@ -1092,27 +1092,15 @@
           "pluginVersion": "12.0.2",
           "targets": [
             {
-              "adHocFilters": [],
-              "adHocValuesQuery": "",
-              "add_metadata": true,
-              "contextWindowSize": "10",
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
+                "type": "grafana-clickhouse-datasource",
                 "uid": "clickhouse"
               },
-              "editorMode": "builder",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "interval": "",
-              "intervalFactor": 1,
-              "nullifySparse": false,
-              "query": "SELECT\n  SpanAttributes['exception.type'] AS \"Exception Type\",\n  SpanName AS \"Route\",\n  count() AS \"Total\"\nFROM default.otel_traces\nWHERE\n  has(SpanAttributes, 'exception.type')\nGROUP BY\n  \"Exception Type\", \"Route\"",
-              "rawQuery": "/* grafana dashboard='System Observability', user='0' */\nSELECT\n  SpanAttributes['exception.type'] AS \"Exception Type\",\n  SpanName AS \"Route\",\n  count() AS \"Total\"\nFROM default.otel_traces\nWHERE\n  has(SpanAttributes, 'exception.type')\nGROUP BY\n  \"Exception Type\", \"Route\"",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true,
-              "useWindowFuncForMacros": true
+              "editorType": "sql",
+              "format": 1,
+              "queryType": "table",
+              "rawSql": "SELECT\n  EventAttributes['exception.type'] AS \"Exception Type\",\n  SpanName AS \"Route\",\n  count() AS \"Total\"\nFROM default.otel_traces\nARRAY JOIN `Events.Name` AS EventName, `Events.Attributes` AS EventAttributes\nWHERE\n  $__timeFilter(Timestamp) AND\n  ServiceName = '${service_name}' AND\n  EventName = 'exception'\nGROUP BY \"Exception Type\", \"Route\"\nORDER BY \"Total\" DESC\nLIMIT 10",
+              "refId": "A"
             }
           ],
           "title": "Top 10 Exception Errors",

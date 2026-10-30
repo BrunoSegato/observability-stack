@@ -28,7 +28,7 @@ A stack sobe os seguintes serviços:
 | Prometheus     | [http://localhost:9090](http://localhost:9090) | Armazenamento e consulta de métricas                  |
 | Tempo (traces) | [http://localhost:3200/metrics](http://localhost:3200/metrics) | Backend de traces                                     |
 | ClickHouse     | [http://localhost:8123](http://localhost:8123) | Banco para dados analíticos e de negócios             |
-| OTEL Collector | OTLP GRPC: 4317                                | Receptor de métricas e traces no formato OTLP         |
+| OTEL Collector | OTLP gRPC: 4317 / OTLP HTTP: 4318              | Receptor de métricas e traces no formato OTLP         |
 
 Usuário padrão do Grafana:
 
@@ -99,6 +99,7 @@ Ambos os dashboards suportam variáveis como `service_name` e `endpoint` para fi
 Para ver dados nos dashboards, envie spans ou métricas para o OTEL Collector local:
 
 * **Endpoint OTLP gRPC**: `http://localhost:4317`
+* **Endpoint OTLP HTTP**: `http://localhost:4318`
 * **Formato recomendado**: OTLP
 
 Pode-se utilizar bibliotecas do OpenTelemetry nas suas aplicações Python, Node, Java etc.

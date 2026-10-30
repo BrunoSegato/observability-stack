@@ -11,7 +11,6 @@ connectors:
       - name: http.method
       - name: http.status_code
       - name: http.route
-      - name: exception.type
     aggregation_temporality: "CUMULATIVE"
     metrics_flush_interval: 15s
 
