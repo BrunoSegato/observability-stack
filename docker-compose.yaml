@@ -1,25 +1,28 @@
 services:
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
+    image: otel/opentelemetry-collector-contrib:0.164.0
     container_name: otel-collector
     volumes:
       - ./otel/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
     ports:
       - 8889:8889 # Prometheus exporter metrics
       - 13133:13133 # health_check extension
-      - 14317:4317 # OTLP gRPC receiver
-      - 14318:4318 # OTLP http receiver
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
     depends_on:
       clickhouse:
         condition: service_healthy
+      loki:
+        condition: service_started
     networks:
       - observability
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.15.1
     container_name: prometheus
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --log.level=debug
@@ -37,13 +40,13 @@ services:
       - observability
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:13.3.0
     container_name: grafana
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
-      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+      - GF_PLUGINS_PREINSTALL_SYNC=grafana-clickhouse-datasource@4.23.3
     ports:
       - "3000:3000"
     volumes:
@@ -65,34 +68,52 @@ services:
         condition: service_started
       tempo:
         condition: service_started
+      loki:
+        condition: service_started
     networks:
       - observability
 
   tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:3.0.0
     container_name: tempo
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./tempo/tempo.yaml:/etc/tempo.yaml
-      - ./tempo-data:/tmp/tempo
+      - tempo-data:/tmp/tempo
     ports:
       - "3200:3200"
-      - "4317:4317"
-      - "4318:4318"
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3200/ready"]
-      interval: 25s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
     depends_on:
+      tempo-init:
+        condition: service_completed_successfully
       prometheus:
         condition: service_healthy
     networks:
       - observability
 
+  # Tempo runs as uid 10001; the volume is created as root, so fix ownership first
+  tempo-init:
+    image: busybox:1.38.0
+    container_name: tempo-init
+    user: root
+    command: [ "chown", "-R", "10001:10001", "/tmp/tempo" ]
+    volumes:
+      - tempo-data:/tmp/tempo
+
+  # The image ships /loki owned by uid 10001, so the named volume inherits the right ownership
+  loki:
+    image: grafana/loki:3.7.9
+    container_name: loki
+    command: [ "-config.file=/etc/loki/loki.yaml" ]
+    volumes:
+      - ./loki/loki.yaml:/etc/loki/loki.yaml
+      - loki-data:/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - observability
+
   clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse/clickhouse-server:26.10.3.7
     container_name: clickhouse
     environment:
       CLICKHOUSE_DB: default
@@ -115,6 +136,8 @@ networks:
   observability:
 
 volumes:
+  prometheus-data:
   clickhouse-data:
   grafana-storage:
   tempo-data:
+  loki-data:

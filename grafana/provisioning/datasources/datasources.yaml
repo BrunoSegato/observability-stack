@@ -1,5 +1,10 @@
 apiVersion: 1
 
+# Recreate ClickHouse so existing installs pick up the fixed uid referenced by the dashboards
+deleteDatasources:
+  - name: ClickHouse
+    orgId: 1
+
 datasources:
   - name: Prometheus
     type: prometheus
@@ -13,16 +18,32 @@ datasources:
     url: http://tempo:3200
     jsonData:
       httpMethod: GET
-      tracesToLogs:
-        datasource: Loki
-        tags: ['job', 'instance']
-        mappedTags: ['service.name']
-        mapTagNamesEnabled: true
-        spanStartTimeShift: '1h'
-        spanEndTimeShift: '1h'
+      # Span -> logs: OTLP logs keep trace_id as structured metadata in Loki
+      tracesToLogsV2:
+        datasourceUid: loki
+        spanStartTimeShift: '-5m'
+        spanEndTimeShift: '5m'
+        customQuery: true
+        query: '{service_name="$${__span.tags["service.name"]}"} | trace_id="$${__trace.traceId}"'
+
+  - name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    url: http://loki:3100
+    jsonData:
+      # Log -> trace: link the trace_id structured metadata to Tempo
+      derivedFields:
+        - name: TraceID
+          matcherType: label
+          matcherRegex: trace_id
+          datasourceUid: P214B5B846CF3925F
+          url: '$${__value.raw}'
+          urlDisplayLabel: View trace
 
   - name: ClickHouse
     type: grafana-clickhouse-datasource
+    uid: clickhouse
     jsonData:
       defaultDatabase: default
       port: 9000

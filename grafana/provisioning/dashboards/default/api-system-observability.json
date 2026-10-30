@@ -300,7 +300,7 @@
               },
               "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "rate(traces_span_metrics_calls_total{\n  service_name=\"$service_name\",\n  span_kind=\"SPAN_KIND_SERVER\",\n  status_code!=\"STATUS_CODE_OK\"\n}[$__rate_interval])",
+              "expr": "sum by(span_name) (\n  rate(traces_span_metrics_calls_total{\n    service_name=\"$service_name\",\n    span_kind=\"SPAN_KIND_SERVER\"\n  }[$__rate_interval])\n)",
               "fullMetaSearch": false,
               "includeNullMetadata": true,
               "instant": false,
@@ -717,7 +717,7 @@
             {
               "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "sum by(span_kind, span_name) (rate(traces_span_metrics_calls_total{service_name=\"fastapi-another-one\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
+              "expr": "sum by(span_kind, span_name) (rate(traces_span_metrics_calls_total{service_name=\"$service_name\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
               "fullMetaSearch": false,
               "includeNullMetadata": true,
               "legendFormat": "{{span_name}}",
@@ -1032,7 +1032,7 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
+            "type": "grafana-clickhouse-datasource",
             "uid": "clickhouse"
           },
           "fieldConfig": {
@@ -1092,27 +1092,15 @@
           "pluginVersion": "12.0.2",
           "targets": [
             {
-              "adHocFilters": [],
-              "adHocValuesQuery": "",
-              "add_metadata": true,
-              "contextWindowSize": "10",
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
+                "type": "grafana-clickhouse-datasource",
                 "uid": "clickhouse"
               },
-              "editorMode": "builder",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "interval": "",
-              "intervalFactor": 1,
-              "nullifySparse": false,
-              "query": "SELECT\n  SpanAttributes['exception.type'] AS \"Exception Type\",\n  SpanName AS \"Route\",\n  count() AS \"Total\"\nFROM default.otel_traces\nWHERE\n  has(SpanAttributes, 'exception.type')\nGROUP BY\n  \"Exception Type\", \"Route\"",
-              "rawQuery": "/* grafana dashboard='System Observability', user='0' */\nSELECT\n  SpanAttributes['exception.type'] AS \"Exception Type\",\n  SpanName AS \"Route\",\n  count() AS \"Total\"\nFROM default.otel_traces\nWHERE\n  has(SpanAttributes, 'exception.type')\nGROUP BY\n  \"Exception Type\", \"Route\"",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true,
-              "useWindowFuncForMacros": true
+              "editorType": "sql",
+              "format": 1,
+              "queryType": "table",
+              "rawSql": "SELECT\n  EventAttributes['exception.type'] AS \"Exception Type\",\n  SpanName AS \"Route\",\n  count() AS \"Total\"\nFROM default.otel_traces\nARRAY JOIN `Events.Name` AS EventName, `Events.Attributes` AS EventAttributes\nWHERE\n  $__timeFilter(Timestamp) AND\n  ServiceName = '${service_name}' AND\n  EventName = 'exception'\nGROUP BY \"Exception Type\", \"Route\"\nORDER BY \"Total\" DESC\nLIMIT 10",
+              "refId": "A"
             }
           ],
           "title": "Top 10 Exception Errors",
@@ -1548,7 +1536,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "rate(traces_span_metrics_calls_total{\n  service_name=\"$service_name\",\n  span_kind=\"SPAN_KIND_SERVER\",\n  span_name=\"$endpoint\",\n  status_code!=\"STATUS_CODE_OK\"\n}[$__rate_interval])",
+          "expr": "sum by(http_status_code) (\n  rate(traces_span_metrics_calls_total{\n    service_name=\"$service_name\",\n    span_kind=\"SPAN_KIND_SERVER\",\n    span_name=\"$endpoint\"\n  }[$__rate_interval])\n)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1960,6 +1948,200 @@
         }
       ],
       "type": "table"
+    },
+    {
+      "type": "row",
+      "id": 28,
+      "title": "Logs",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "id": 29,
+      "title": "Log Volume by Level",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "critical"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "warn"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "info"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "debug"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "unknown"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "refId": "A",
+          "queryType": "range",
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({service_name=\"$service_name\"} |~ \"(?i)$log_search\" [$__auto]))",
+          "legendFormat": "{{detected_level}}"
+        }
+      ]
+    },
+    {
+      "type": "logs",
+      "id": 30,
+      "title": "Logs",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "refId": "A",
+          "queryType": "range",
+          "editorMode": "code",
+          "expr": "{service_name=\"$service_name\"} |~ \"(?i)$log_search\""
+        }
+      ]
     }
   ],
   "preload": false,
@@ -2011,6 +2193,17 @@
         "refresh": 1,
         "regex": "",
         "type": "query"
+      },
+      {
+        "type": "textbox",
+        "name": "log_search",
+        "label": "Log search",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 0
       }
     ]
   },
