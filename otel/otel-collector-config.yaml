@@ -36,6 +36,18 @@ processors:
           - set(attributes["http.method"], attributes["http.request.method"]) where attributes["http.request.method"] != nil
           - set(attributes["http.status_code"], attributes["http.response.status_code"]) where attributes["http.response.status_code"] != nil
 
+  # Expose service.name as the service_name label on application metrics,
+  # matching the label used by the span metrics
+  transform/service_name:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(attributes["service.name"], resource.attributes["service.name"]) where resource.attributes["service.name"] != nil
+
+  # The Prometheus exporter keeps only the last value of delta sums,
+  # so convert them to cumulative (SDKs configured with delta temporality)
+  delta_to_cumulative:
+
 exporters:
   debug:
     verbosity: detailed
@@ -72,4 +84,8 @@ service:
     metrics:
       receivers: [span_metrics]
       processors: [batch]
+      exporters: [prometheus]
+    metrics/otlp:
+      receivers: [otlp]
+      processors: [delta_to_cumulative, transform/service_name, batch]
       exporters: [prometheus]

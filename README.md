@@ -4,8 +4,8 @@
 
 Este projeto provê uma stack completa de observabilidade local baseada em:
 
-* **OpenTelemetry Collector**: recebe os traces das aplicações e gera métricas a partir deles (span metrics).
-* **Prometheus**: armazena e consulta as métricas geradas pelo OTEL Collector.
+* **OpenTelemetry Collector**: recebe traces e métricas das aplicações e gera métricas a partir dos traces (span metrics).
+* **Prometheus**: armazena e consulta as métricas recebidas e geradas pelo OTEL Collector.
 * **Grafana**: interface para visualização de métricas e traces.
 * **Grafana Tempo**: armazena e consulta traces.
 * **ClickHouse**: armazena eventos e erros de negócio para análises personalizadas.
@@ -28,7 +28,7 @@ A stack sobe os seguintes serviços:
 | Prometheus     | [http://localhost:9090](http://localhost:9090) | Armazenamento e consulta de métricas                  |
 | Tempo (traces) | [http://localhost:3200/ready](http://localhost:3200/ready) | Backend de traces                                     |
 | ClickHouse     | [http://localhost:8123](http://localhost:8123) | Banco para dados analíticos e de negócios             |
-| OTEL Collector | OTLP gRPC: 4317 / OTLP HTTP: 4318              | Receptor de traces no formato OTLP                    |
+| OTEL Collector | OTLP gRPC: 4317 / OTLP HTTP: 4318              | Receptor de traces e métricas no formato OTLP         |
 
 O Grafana está configurado com acesso anônimo como **Admin** e sem tela de login, o que é adequado apenas para uso local.
 
@@ -38,8 +38,9 @@ O Grafana está configurado com acesso anônimo como **Admin** e sem tela de log
 
 ### 🔭 OpenTelemetry Collector
 
-* Recebe traces no formato OTLP (apenas traces; não há pipeline de métricas ou logs das aplicações)
+* Recebe traces e métricas no formato OTLP (não há pipeline de logs)
 * Envia os traces para o Tempo e o ClickHouse
+* Expõe as métricas das aplicações para o Prometheus na porta 8889, com o label `service_name`
 * Gera métricas de chamadas e latência (connector `span_metrics`) e as expõe para o Prometheus na porta 8889
 * Aceita as convenções HTTP antigas (`http.method`, `http.status_code`) e as estáveis (`http.request.method`, `http.response.status_code`); ambas viram os labels `http_method` e `http_status_code`
 * Configurado via `otel/otel-collector-config.yaml`
@@ -96,7 +97,7 @@ O dashboard `System Observability` tem as variáveis `service_name` e `endpoint`
 
 ### Enviando dados
 
-Para ver dados nos dashboards, envie traces para o OTEL Collector local:
+Envie traces e métricas para o OTEL Collector local:
 
 * **Endpoint OTLP gRPC**: `http://localhost:4317`
 * **Endpoint OTLP HTTP**: `http://localhost:4318`
@@ -108,6 +109,13 @@ Para os painéis mostrarem dados:
 
 * Os painéis técnicos consideram apenas spans do tipo `SERVER` (gerados pelas instrumentações HTTP).
 * As exceções são lidas dos eventos `exception` dos spans, criados por `span.record_exception(...)` ou automaticamente pelas instrumentações.
+
+Sobre as métricas das aplicações:
+
+* Ficam disponíveis no Prometheus com o label `service_name` (igual às span metrics) e com `job` = nome do serviço.
+* Os nomes seguem a conversão padrão do OpenTelemetry para Prometheus: pontos viram `_`, counters ganham `_total` e a unidade vira sufixo (ex.: `orders.created` → `orders_created_total`; histograma `payment.duration` em `ms` → `payment_duration_milliseconds_bucket`; gauge com unidade `1` → `_ratio`).
+* Métricas com temporalidade delta são convertidas para cumulativas pelo collector.
+* Os dashboards incluídos usam apenas as span metrics; métricas das aplicações podem ser exploradas no Grafana (Explore) ou em painéis próprios.
 
 ### Visualizando
 
