@@ -60,6 +60,12 @@ exporters:
     tls:
       insecure: true
 
+  # Loki native OTLP ingestion (the exporter appends /v1/logs)
+  otlp_http/loki:
+    endpoint: http://loki:3100/otlp
+    tls:
+      insecure: true
+
   clickhouse:
     endpoint: tcp://clickhouse:9000
     database: default
@@ -89,3 +95,7 @@ service:
       receivers: [otlp]
       processors: [delta_to_cumulative, transform/service_name, batch]
       exporters: [prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/loki]

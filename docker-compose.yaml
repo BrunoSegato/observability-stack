@@ -12,6 +12,8 @@ services:
     depends_on:
       clickhouse:
         condition: service_healthy
+      loki:
+        condition: service_started
     networks:
       - observability
 
@@ -20,6 +22,7 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --log.level=debug
@@ -65,6 +68,8 @@ services:
         condition: service_started
       tempo:
         condition: service_started
+      loki:
+        condition: service_started
     networks:
       - observability
 
@@ -94,6 +99,19 @@ services:
     volumes:
       - tempo-data:/tmp/tempo
 
+  # The image ships /loki owned by uid 10001, so the named volume inherits the right ownership
+  loki:
+    image: grafana/loki:3.7.9
+    container_name: loki
+    command: [ "-config.file=/etc/loki/loki.yaml" ]
+    volumes:
+      - ./loki/loki.yaml:/etc/loki/loki.yaml
+      - loki-data:/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - observability
+
   clickhouse:
     image: clickhouse/clickhouse-server:26.10.3.7
     container_name: clickhouse
@@ -118,6 +136,8 @@ networks:
   observability:
 
 volumes:
+  prometheus-data:
   clickhouse-data:
   grafana-storage:
   tempo-data:
+  loki-data:
